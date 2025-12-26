@@ -1,0 +1,18 @@
+name: Sync Upstream
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync upstream changes
+        run: |
+          git remote add upstream https://github.com/dani-garcia/vaultwarden.git
+          git fetch upstream
+          git checkout main
+          git merge upstream/main
+          git push origin main
