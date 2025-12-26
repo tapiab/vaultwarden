@@ -1,0 +1,34 @@
+name: Build and Release Binary
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or SHA to checkout (e.g., 1.28.0)"
+        required: true
+        default: "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Build binary
+        run: cargo build --release --features sqlite
+      - name: Rename binary
+        run: mv target/release/vaultwarden vaultwarden-${{ github.ref_name }}-linux-amd64
+      - name: Upload binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: vaultwarden-${{ github.ref_name }}-linux-amd64
+          asset_name: vaultwarden-${{ github.ref_name }}-linux-amd64
+          tag: ${{ github.ref }}
