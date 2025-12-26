@@ -1,0 +1,20 @@
+name: Sync Upstream
+on:
+  schedule:
+    - cron: "0 7 * * *" # Runs once a day
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync upstream changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git remote add upstream https://github.com/dani-garcia/vaultwarden.git
+          git fetch upstream
+          git checkout main
+          git rebase upstream/main
+          git push -f origin main
