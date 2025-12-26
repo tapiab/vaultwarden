@@ -22,7 +22,7 @@ jobs:
           toolchain: stable
           override: true
       - name: Build binary
-        run: cargo build --release
+        run: cargo build --release --features sqlite
       - name: Rename binary
         run: mv target/release/vaultwarden vaultwarden-${{ github.ref_name }}-linux-amd64
       - name: Upload binary to release
